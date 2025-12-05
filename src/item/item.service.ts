@@ -13,24 +13,41 @@ export class ItemService extends BaseService<Item, PrismaService['item']> {
 
   async findAllItems(
     pageable: PageableDto,
-    filters?: { description?: string; categoryId?: number },
+    filters?: { description?: string; categoryId?: any },
   ) {
-    const where = {
-      description: filters?.description
-        ? { contains: filters.description, mode: 'insensitive' }
-        : undefined,
-      categoryId: filters?.categoryId ?? undefined,
-    };
+    const OR: any[] = [];
+
+    if (filters?.description) {
+      OR.push({
+        description: {
+          contains: filters.description,
+          mode: 'insensitive',
+        },
+      });
+    }
+
+    if (filters?.categoryId) {
+      const categoryIdNumber = Number(filters.categoryId);
+
+      if (!isNaN(categoryIdNumber) && categoryIdNumber != 0) {
+        OR.push({ categoryId: categoryIdNumber });
+      }
+    }
+
+    const where = OR.length > 0 ? { OR } : {};
+
     const include: Prisma.ItemInclude = {
       category: {
         select: {
           description: true,
           color: true,
-          id: true
+          id: true,
         },
       },
     };
-    const orderBy: Prisma.Enumerable<any> = { id: 'asc' };
+
+    const orderBy = { id: 'asc' };
+
     return this.findPagered(pageable, where, orderBy, include);
   }
 }

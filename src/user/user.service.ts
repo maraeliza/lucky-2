@@ -98,6 +98,7 @@ export class UserService extends BaseService<User, PrismaService['user']> {
         email: dto.email,
         phone: dto.phone,
         password: dto.password,
+        role: dto.role,
         ...(dto.address && {
           address: {
             update: {

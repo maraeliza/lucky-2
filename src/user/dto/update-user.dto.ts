@@ -1,5 +1,6 @@
 // src/user/dto/update-user.dto.ts
 import { IsOptional, IsInt } from 'class-validator';
+import { UserType } from 'generated/prisma';
 import { CreateAddressDto } from 'src/address/dto/create-address.dto';
 
 export class UpdateUserDto {
@@ -14,6 +15,9 @@ export class UpdateUserDto {
 
   @IsOptional()
   password?: string;
+
+  @IsOptional()
+  role?: UserType;
 
   @IsOptional()
   address?: CreateAddressDto;
